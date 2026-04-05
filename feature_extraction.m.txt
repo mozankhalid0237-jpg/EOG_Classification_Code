@@ -1,0 +1,48 @@
+feature_extraction.m
+function [features, window_labels] = feature_extraction(hor_signal, ver_signal, labels)
+% FEATURE EXTRACTION USING WINDOWING
+
+window_size = 64;
+total_samples = length(hor_signal);
+num_windows = floor(total_samples / window_size);
+
+features = zeros(num_windows, 18);
+
+for w = 1:num_windows
+    idx = (w-1)*window_size + 1 : w*window_size;
+    win_h = hor_signal(idx);
+    win_v = ver_signal(idx);
+    
+    % Horizontal features
+    features(w,1) = rms(win_h);
+    features(w,2) = max(win_h)-min(win_h);
+    features(w,3) = var(win_h);
+    features(w,4) = mean(win_h);
+    features(w,5) = median(win_h);
+    cov_matrix = cov(win_h, win_v);
+    features(w,6) = cov_matrix(1,2);
+    features(w,7) = max(win_h);
+    features(w,8) = sum(abs(fft(win_h)));
+    features(w,9) = sum(win_h.^2);
+    
+    % Vertical features
+    features(w,10) = rms(win_v);
+    features(w,11) = max(win_v)-min(win_v);
+    features(w,12) = var(win_v);
+    features(w,13) = mean(win_v);
+    features(w,14) = median(win_v);
+    cov_matrix_v = cov(win_v, win_h);
+    features(w,15) = cov_matrix_v(1,2);
+    features(w,16) = max(win_v);
+    features(w,17) = sum(abs(fft(win_v)));
+    features(w,18) = sum(win_v.^2);
+end
+
+% Window labels
+window_labels = zeros(num_windows,1);
+for w = 1:num_windows
+    idx = (w-1)*window_size + 1 : w*window_size;
+    window_labels(w) = mode(labels(idx));
+end
+
+end

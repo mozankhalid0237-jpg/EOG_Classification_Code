@@ -1,0 +1,28 @@
+classification.m
+function results = classification(train_X, train_y, test_X, test_y)
+% CLASSIFICATION USING KNN, SVM, DT
+
+% KNN
+knn_model = fitcknn(train_X, train_y, 'NumNeighbors',4);
+knn_pred = predict(knn_model, test_X);
+knn_acc = mean(knn_pred==test_y)*100;
+
+% SVM
+t = templateSVM('KernelFunction','polynomial','PolynomialOrder',2,'BoxConstraint',14.5);
+svm_model = fitcecoc(train_X, train_y,'Learners',t);
+svm_pred = predict(svm_model,test_X);
+svm_acc = mean(svm_pred==test_y)*100;
+
+% Decision Tree
+dt_model = fitctree(train_X, train_y);
+dt_pred = predict(dt_model,test_X);
+dt_acc = mean(dt_pred==test_y)*100;
+
+results.knn_pred = knn_pred;
+results.svm_pred = svm_pred;
+results.dt_pred = dt_pred;
+results.knn_acc = knn_acc;
+results.svm_acc = svm_acc;
+results.dt_acc = dt_acc;
+
+end

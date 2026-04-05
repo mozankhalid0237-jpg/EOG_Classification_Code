@@ -1,0 +1,24 @@
+preprocessing.m
+function [train_X, train_y, test_X, test_y] = preprocessing(features, labels)
+% NORMALIZATION & TRAIN/TEST SPLIT
+
+% Normalize
+mean_features = mean(features);
+std_features = std(features);
+std_features(std_features==0) = 1;
+features_norm = (features - mean_features) ./ std_features;
+
+% Shuffle
+num_samples = size(features_norm,1);
+idx = randperm(num_samples);
+features_shuffled = features_norm(idx,:);
+labels_shuffled = labels(idx);
+
+% Split 80/20
+split_idx = round(0.8*num_samples);
+train_X = features_shuffled(1:split_idx,:);
+train_y = labels_shuffled(1:split_idx);
+test_X = features_shuffled(split_idx+1:end,:);
+test_y = labels_shuffled(split_idx+1:end);
+
+end
